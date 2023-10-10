@@ -56,6 +56,13 @@ usertrap(void)
     if(p->killed)
       exit(-1);
 
+    if (trap == T_TIMER) {
+    if (myproc() && myproc()->state == RUNNING) {
+      myproc()->cputime++;  // Increment cputime when a time slice is used
+    }
+    lapiceoi();
+    }
+
     // sepc points to the ecall instruction,
     // but we want to return to the next instruction.
     p->trapframe->epc += 4;
@@ -147,6 +154,16 @@ kerneltrap()
     printf("scause %p\n", scause);
     printf("sepc=%p stval=%p\n", r_sepc(), r_stval());
     panic("kerneltrap");
+  }
+
+  if (trapno == T_TIMER) {
+    if (mycpu()->ncli == 1) {
+      mycpu()->ticks++;
+      if (myproc() && myproc()->state == RUNNING) {
+        myproc()->cputime++;  // Increment cputime when a time slice is used
+      }
+    }
+    lapiceoi();
   }
 
   // give up the CPU if this is a timer interrupt.

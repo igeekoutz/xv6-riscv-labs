@@ -60,7 +60,7 @@ struct trapframe {
   /* 120 */ uint64 a1;
   /* 128 */ uint64 a2;
   /* 136 */ uint64 a3;
-  /* 144 */ uint64 a4;
+  /* 144 */ uint64 a4;Task2.(20points)Keep track of how much cputime a process has used.Add a cputime field to struct proc in kernel/proc.h. Initialize this field to zero when the process is created in allocproc() in kernel/proc.c. Increment this field every time the process uses up its time slice (see usertrap() and kerneltrap() in kernel/trap.c).
   /* 152 */ uint64 a5;
   /* 160 */ uint64 a6;
   /* 168 */ uint64 a7;
@@ -97,6 +97,7 @@ struct proc {
   // these are private to the process, so p->lock need not be held.
   uint64 kstack;               // Virtual address of kernel stack
   uint64 sz;                   // Size of process memory (bytes)
+  uint64 cputime;
   pagetable_t pagetable;       // User page table
   struct trapframe *trapframe; // data page for trampoline.S
   struct context context;      // swtch() here to run process

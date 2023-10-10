@@ -6,6 +6,7 @@
 #include "proc.h"
 #include "pstat.h"
 #include "defs.h"
+#include "pstat.h"
 
 struct cpu cpus[NCPU];
 
@@ -106,6 +107,7 @@ static struct proc*
 allocproc(void)
 {
   struct proc *p;
+  p->cputime = 0;
 
   for(p = proc; p < &proc[NPROC]; p++) {
     acquire(&p->lock);
@@ -246,6 +248,9 @@ userinit(void)
   p->state = RUNNABLE;
 
   release(&p->lock);
+}
+int wait2(int *status, struct rusage *rusage) {
+  return syscall(SYS_wait2, (uint)status, (uint)rusage);
 }
 
 // Grow or shrink user memory by n bytes.
